@@ -1,20 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
-    android:orientation="vertical"
+    android:layout_height="100dp"
+    android:orientation="horizontal"
     android:layout_marginTop="8dp"
     android:layout_marginBottom="8dp"
     android:background="@color/colorWhite">
 
-    <TextView
-        android:gravity="center"
-        android:id="@+id/txtTitulo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textColor="#000000"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:text="Titulo" />
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:layout_weight="1"
+        android:contentDescription="@string/imagem_pequena"
+        android:layout_gravity="center_vertical"
+        />
+
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTitulo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_margin="10dp"
+            android:text="Titulo" />
+
+        <TextView
+            android:id="@+id/txtDesc"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="#000000"
+            android:layout_margin="10dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:text="@string/desc" />
+
+    </LinearLayout>
+
 
 </LinearLayout>

@@ -1,5 +1,7 @@
 package br.ucs.lista.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import br.ucs.lista.R;
+import br.ucs.lista.activity.EditActivity;
 import br.ucs.lista.model.Foto;
 import lombok.Setter;
 
@@ -54,6 +57,10 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         @Override
         public void onClick(View v) {
             Toast.makeText(v.getContext(),"Você selecionou " + fotoList.get(getLayoutPosition()).getTitulo(),Toast.LENGTH_LONG).show();
+            Context context = v.getContext();
+            Intent intent = new Intent(context, EditActivity.class);
+            context.startActivity(intent);
+
         }
 
         public void setData(Foto foto) {

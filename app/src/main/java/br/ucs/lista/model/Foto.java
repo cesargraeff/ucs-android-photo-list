@@ -16,8 +16,7 @@ public class Foto implements Serializable {
     private String desc;
     private String path;
 
-    public Foto(String titulo, String desc) {
-        this.titulo = titulo;
-        this.desc = desc;
+    public Foto(String path) {
+        this.path = path;
     }
 }

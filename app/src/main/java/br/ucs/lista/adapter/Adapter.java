@@ -69,7 +69,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(v.getContext(),"Você selecionou " + fotoList.get(getLayoutPosition()).getTitulo(),Toast.LENGTH_LONG).show();
+            // Toast.makeText(v.getContext(),"Você selecionou " + fotoList.get(getLayoutPosition()).getTitulo(),Toast.LENGTH_LONG).show();
             Context context = v.getContext();
             Intent intent = new Intent(context, EditActivity.class);
             Foto foto = fotoList.get(getLayoutPosition());
@@ -83,7 +83,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             txtDesc.setText(foto.getDesc());
 
             Glide.with(context)
-                    .load(Uri.fromFile(new File(context.getFilesDir(), "LISTA_20200430_213507.jpg")))
+                    .load(Uri.fromFile(new File(context.getFilesDir(), foto.getPath())))
                     .centerCrop() //
                     .into(img);
         }

@@ -1,6 +1,7 @@
 package br.ucs.lista.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -21,11 +22,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +40,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import br.ucs.lista.R;
 import br.ucs.lista.adapter.Adapter;
@@ -41,12 +51,22 @@ import br.ucs.lista.model.Foto;
 public class ScrollingActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    ImageButton btnAdd;
-    File file = null;
-    private final int GALERIA_IMAGENS = 1;
+    private ImageButton btnAdd;
+    private EditText busca;
+
     private final int PERMISSAO_REQUEST = 2;
     private final int CAMERA = 3;
-    private static int EDIT = 10;
+    private final int EDIT = 10;
+    private final int DELETE = 11;
+
+    private final int ACTION_DELETE = 100;
+    private final int ACTION_SAVE = 200;
+
+    private AtomicInteger atomicInteger = new AtomicInteger(100);
+
+    private List<Foto> fotoList;
+    private Adapter adapter;
+    private File file = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,12 +78,13 @@ public class ScrollingActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
+        busca = findViewById(R.id.busca);
 
         verificarPerm();
         addListeners();
 
-        final List<Foto> fotoList = mockList();
-        final Adapter adapter = new Adapter(fotoList);
+        fotoList = mockList();
+        adapter = new Adapter(fotoList);
 
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -91,22 +112,42 @@ public class ScrollingActivity extends AppCompatActivity {
                 }
             }
         });
+       busca.setOnKeyListener(new View.OnKeyListener() {
+           @Override
+           public boolean onKey(View v, int keyCode, KeyEvent event) {
+               EditText editText = (EditText) v;
+               if (keyCode == EditorInfo.IME_ACTION_SEARCH ||
+                       keyCode == EditorInfo.IME_ACTION_DONE ||
+                       event.getAction() == KeyEvent.ACTION_DOWN &&
+                               event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+
+                   updateList(editText.getText().toString());
+               }
+
+                   return false;
+           }
+       });
+    }
+
+    private void updateList(String s) {
+        // TODO REALIZAR filtro no sqlite
+        if(StringUtils.trimToNull(s)!= null){
+            fotoList.removeIf(e -> !e.getTitulo().toLowerCase().contains(s.toLowerCase()));
+        }
+        else {
+            fotoList.removeIf(e -> e.getId() != null);
+
+            // TODO USAR dados do sqlite
+            fotoList.addAll(mockList());
+        }
+        adapter.notifyDataSetChanged();
     }
 
     private List<Foto> mockList() {
         List<Foto> fotoList = new ArrayList<>();
-        fotoList.add(new Foto("10","10"));
-        fotoList.add(new Foto("11", "11"));
-        fotoList.add(new Foto("11", "11"));
-        fotoList.add(new Foto("13", "13"));
-        fotoList.add(new Foto("14", "14"));
-        fotoList.add(new Foto("15", "15"));
-        fotoList.add(new Foto("16", "16"));
-        fotoList.add(new Foto("17", "17"));
-        fotoList.add(new Foto("18", "18"));
-        fotoList.add(new Foto("19", "19"));
-        fotoList.add(new Foto("20", "20"));
-        fotoList.add(new Foto("21", "21"));
+        fotoList.add(new Foto(1,"Titulo-10","Foto tirada no aviver da 10","LISTA_20200430_213507.jpg" ));
+        fotoList.add(new Foto(2,"Titulo-11", "Foto tirada no aviver da 11","LISTA_20200430_213507.jpg"));
+        fotoList.add(new Foto(3,"Titulo-11", "Foto tirada no aviver da 11","LISTA_20200430_213507.jpg"));
         return  fotoList;
     }
 
@@ -145,17 +186,6 @@ public class ScrollingActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == GALERIA_IMAGENS) {
-            Uri selectedImage = data.getData();
-            String[] filePath = {MediaStore.Images.Media.DATA};
-            Cursor c = getContentResolver().query(selectedImage, filePath, null,
-                    null, null);
-            c.moveToFirst();
-            int columnIndex = c.getColumnIndex(filePath[0]);
-            String picturePath = c.getString(columnIndex);
-            c.close();
-            file = new File(picturePath);
-        }
         if (resultCode == RESULT_OK && requestCode == CAMERA) {
             sendBroadcast(new Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
@@ -164,6 +194,52 @@ public class ScrollingActivity extends AppCompatActivity {
 
             Toast.makeText(this, file.getAbsolutePath(), Toast.LENGTH_LONG).show();
 
+            Foto foto = new Foto(file.getName());
+            Intent intent = new Intent(this, EditActivity.class);
+            intent.putExtra("foto", foto);
+            startActivityForResult(intent, EDIT);
+
+        }
+
+        if (resultCode == RESULT_OK && requestCode == EDIT) {
+            int type = data.getExtras().getInt("type", 0);
+            Foto foto = (Foto) data.getExtras().get("foto");
+
+            switch (type){
+                case  ACTION_SAVE:
+                    // TODO SALVAR NO SQLite
+                    if(foto.getId() == null){
+                        foto.setId(atomicInteger.getAndAdd(1));
+                        fotoList.add(foto);
+                    }
+                    else {
+                        Optional<Foto> f = fotoList.stream().filter(e -> e.getId().equals(foto.getId())).findFirst();
+                        f.ifPresent(e -> {
+                            e.setTitulo(foto.getTitulo());
+                            e.setDesc(foto.getDesc());
+                        });
+                    }
+
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(this,"Operação realizada con sucesso",Toast.LENGTH_LONG).show();
+                    break;
+                case ACTION_DELETE:
+                    // TODO Remover no sqlite
+                    File file = new File(this.getFilesDir(), foto.getPath());
+                    try {
+                        if (file.exists()) {
+                            file.getCanonicalFile().delete();
+                            getApplicationContext().deleteFile(file.getName());
+                        }
+                    } catch (IOException e) {
+                        Toast.makeText(this, "Falha ao remover arquivo", Toast.LENGTH_LONG).show();
+                    }
+                    fotoList.removeIf(e -> e.getId().equals(foto.getId()));
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(this,"Operação realizada con sucesso",Toast.LENGTH_LONG).show();
+                    break;
+                default:
+            }
         }
     }
 }

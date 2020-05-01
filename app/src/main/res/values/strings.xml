@@ -94,4 +94,6 @@
     <string name="tilulo">Tilulo</string>
     <string name="imagem_pequena">Imagem pequena</string>
     <string name="desc">Descrição</string>
+    <string name="salvar">Salvar</string>
+    <string name="remover">Remover</string>
 </resources>

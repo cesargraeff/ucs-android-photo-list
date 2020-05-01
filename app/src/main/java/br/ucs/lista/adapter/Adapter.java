@@ -1,16 +1,22 @@
 package br.ucs.lista.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
+import java.io.File;
 import java.util.List;
 
 import br.ucs.lista.R;
@@ -22,6 +28,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
 
     private List<Foto> fotoList;
+    private Context context;
+    private static int EDIT = 10;
     
 
     public Adapter(List<Foto> fotoList) {
@@ -32,12 +40,13 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_layout,viewGroup,false);
+        context =viewGroup.getContext();
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-        viewHolder.setData(fotoList.get(position));
+        viewHolder.setData(fotoList.get(position), this.context);
     }
 
     @Override
@@ -47,11 +56,15 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView txtTitulo;
+        private TextView txtDesc;
+        private ImageView img;
 
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             txtTitulo = itemView.findViewById(R.id.txtTitulo);
+            txtDesc= itemView.findViewById(R.id.txtDesc);
+            img = itemView.findViewById(R.id.img);
         }
 
         @Override
@@ -59,12 +72,20 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             Toast.makeText(v.getContext(),"Você selecionou " + fotoList.get(getLayoutPosition()).getTitulo(),Toast.LENGTH_LONG).show();
             Context context = v.getContext();
             Intent intent = new Intent(context, EditActivity.class);
-            context.startActivity(intent);
+            Foto foto = fotoList.get(getLayoutPosition());
+            intent.putExtra("foto", foto);
+            ((Activity) context).startActivityForResult(intent, EDIT);
 
         }
 
-        public void setData(Foto foto) {
+        public void setData(Foto foto, Context context) {
             txtTitulo.setText(foto.getTitulo());
+            txtDesc.setText(foto.getDesc());
+
+            Glide.with(context)
+                    .load(Uri.fromFile(new File(context.getFilesDir(), "LISTA_20200430_213507.jpg")))
+                    .centerCrop() //
+                    .into(img);
         }
     }
 }

@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
 import java.util.List;
@@ -30,7 +31,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     private List<Foto> fotoList;
     private Context context;
     private static int EDIT = 10;
-    
+
 
     public Adapter(List<Foto> fotoList) {
         this.fotoList = fotoList;
@@ -39,8 +40,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_layout,viewGroup,false);
-        context =viewGroup.getContext();
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_layout, viewGroup, false);
+        context = viewGroup.getContext();
         return new ViewHolder(view);
     }
 
@@ -54,7 +55,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         return fotoList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView txtTitulo;
         private TextView txtDesc;
         private ImageView img;
@@ -63,13 +64,12 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             super(itemView);
             itemView.setOnClickListener(this);
             txtTitulo = itemView.findViewById(R.id.txtTitulo);
-            txtDesc= itemView.findViewById(R.id.txtDesc);
+            txtDesc = itemView.findViewById(R.id.txtDesc);
             img = itemView.findViewById(R.id.img);
         }
 
         @Override
         public void onClick(View v) {
-            // Toast.makeText(v.getContext(),"Você selecionou " + fotoList.get(getLayoutPosition()).getTitulo(),Toast.LENGTH_LONG).show();
             Context context = v.getContext();
             Intent intent = new Intent(context, EditActivity.class);
             Foto foto = fotoList.get(getLayoutPosition());
@@ -81,11 +81,15 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         public void setData(Foto foto, Context context) {
             txtTitulo.setText(foto.getTitulo());
             txtDesc.setText(foto.getDesc());
-
-            Glide.with(context)
-                    .load(Uri.fromFile(new File(context.getFilesDir(), foto.getPath())))
-                    .centerCrop() //
-                    .into(img);
+            try {
+                Glide.with(context)
+                        .load(Uri.fromFile(new File(context.getFilesDir(), foto.getPath())))
+                        .into(img);
+            } catch (Exception e) {
+                Glide.with(context)
+                        .load(R.drawable.ic_image_not_found)
+                        .into(img);
+            }
         }
     }
 }

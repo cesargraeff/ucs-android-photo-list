@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp">
+    android:layout_margin="10dp"
+    >
 
 
     <!-- Footer aligned to bottom -->
@@ -12,32 +13,29 @@
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        >
+        android:layout_alignParentBottom="true">
 
         <Button
-            style="@style/CardView.Dark"
             android:id="@+id/btnSalvar"
+            style="@style/CardView.Dark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/salvar"
-            android:background="@color/colorWhite"
-            android:layout_weight="1"
-            android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
-             />
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:background="@color/colorWhite"
+            android:text="@string/salvar" />
 
         <Button
-            style="@style/CardView.Dark"
             android:id="@+id/btnExcluir"
+            style="@style/CardView.Dark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/remover"
-            android:background="@color/colorWhite"
-            android:layout_weight="1"
-            android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
-            />
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:background="@color/colorWhite"
+            android:text="@string/remover" />
     </LinearLayout>
 
 
@@ -51,35 +49,44 @@
             android:id="@+id/img"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginBottom="15sp"
             android:layout_weight="8"
-            android:src="@drawable/ic_add_black_24dp"
             android:background="@color/colorWhite"
-            android:contentDescription="@string/adicionar_imagem" />
+            android:contentDescription="@string/adicionar_imagem"
+            android:src="@drawable/ic_add_black_24dp" />
 
-        <EditText
-            android:id="@+id/txtTitulo"
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:textColor="#000000"
-            android:textSize="15sp"
-            android:layout_margin="10dp"
-            android:text="Titulo"
-            android:inputType="text"
-            />
+            android:layout_margin="5sp"
+            android:layout_weight="1">
 
-        <EditText
-            android:inputType="text"
-            android:id="@+id/txtDesc"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txtTitulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Titulo"
+                android:inputType="text"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:textColor="#000000"
-            android:textSize="15sp"
-            android:layout_margin="10dp"
-            android:text="@string/imagem_pequena" />
+            android:layout_margin="5sp"
+            android:layout_weight="1">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txtDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Descrição"
+                android:inputType="text"
+                android:textSize="15sp" />
 
+        </com.google.android.material.textfield.TextInputLayout>
 
 
     </LinearLayout>

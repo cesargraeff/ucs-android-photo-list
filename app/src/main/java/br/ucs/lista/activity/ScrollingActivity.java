@@ -145,9 +145,9 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private List<Foto> mockList() {
         List<Foto> fotoList = new ArrayList<>();
-        fotoList.add(new Foto(1,"Titulo-10","Foto tirada no aviver da 10","LISTA_20200430_213507.jpg" ));
-        fotoList.add(new Foto(2,"Titulo-11", "Foto tirada no aviver da 11","LISTA_20200430_213507.jpg"));
-        fotoList.add(new Foto(3,"Titulo-11", "Foto tirada no aviver da 11","LISTA_20200430_213507.jpg"));
+        fotoList.add(new Foto(1,"Titulo-10","Foto tirada no aviver da 10","LISTA_20200507_195300.jpg" ));
+        fotoList.add(new Foto(2,"Titulo-11", "Foto tirada no aviver da 11","LISTA_20200507_195300.jpg"));
+        fotoList.add(new Foto(3,"Titulo-11", "Foto tirada no aviver da 11","LIST_20200507_195300.jpg"));
         return  fotoList;
     }
 

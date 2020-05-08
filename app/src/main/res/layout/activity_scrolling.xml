@@ -51,7 +51,6 @@
         android:layout_height="fill_parent"
         android:layout_above="@id/footer"
         android:layout_below="@+id/header"
-        android:background="@color/colorAccent"
         >
 
         <androidx.recyclerview.widget.RecyclerView

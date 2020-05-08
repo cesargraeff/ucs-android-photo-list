@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="130dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:layout_marginTop="1dp"
     android:layout_marginBottom="1dp"
-    android:background="@color/colorWhite"
+    android:background="@drawable/shape"
    >
 
     <ImageView
@@ -27,21 +27,32 @@
         android:layout_margin="5dp">
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tilulo"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <TextView
             android:id="@+id/txtTitulo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#000000"
-            android:layout_margin="5dp"
-            android:text="Titulo" />
+            android:layout_marginBottom="10sp"
+            android:gravity="center"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/desc"
+            android:textStyle="bold"
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/txtDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#000000"
-            android:layout_margin="5dp"
-            android:textSize="15sp"
-            android:text="@string/desc" />
+            android:gravity="center"/>
 
     </LinearLayout>
 

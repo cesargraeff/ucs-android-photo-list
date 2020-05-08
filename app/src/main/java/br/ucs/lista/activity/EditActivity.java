@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,7 +25,7 @@ import br.ucs.lista.model.Foto;
 public class EditActivity extends AppCompatActivity {
 
     private ImageView img;
-    private EditText txtTitulo;
+    private TextInputEditText txtTitulo;
     private EditText textDesc;
     private Button btnSalvar;
     private Button btnExcluir;

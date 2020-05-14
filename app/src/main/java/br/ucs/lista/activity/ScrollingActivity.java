@@ -1,35 +1,25 @@
 package br.ucs.lista.activity;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,15 +27,14 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import br.ucs.lista.R;
 import br.ucs.lista.adapter.Adapter;
+import br.ucs.lista.banco.DBSQLiteHelper;
 import br.ucs.lista.model.Foto;
 
 public class ScrollingActivity extends AppCompatActivity {
@@ -64,6 +53,8 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private AtomicInteger atomicInteger = new AtomicInteger(100);
 
+    private DBSQLiteHelper db;
+
     private List<Foto> fotoList;
     private Adapter adapter;
     private File file = null;
@@ -72,6 +63,8 @@ public class ScrollingActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling);
+
+        db = new DBSQLiteHelper(this);
 
         btnAdd = findViewById(R.id.btnAdd);
         recyclerView = findViewById(R.id.recycler_view);
@@ -83,7 +76,7 @@ public class ScrollingActivity extends AppCompatActivity {
         verificarPerm();
         addListeners();
 
-        fotoList = mockList();
+        fotoList = db.getAllFotos();
         adapter = new Adapter(fotoList);
 
         recyclerView.setAdapter(adapter);
@@ -130,25 +123,20 @@ public class ScrollingActivity extends AppCompatActivity {
     }
 
     private void updateList(String s) {
-        // TODO REALIZAR filtro no sqlite
         if(StringUtils.trimToNull(s)!= null){
-            fotoList.removeIf(e -> !e.getTitulo().toLowerCase().contains(s.toLowerCase()));
+            fotoList.removeIf(e -> e.getId() != null);
+            fotoList.addAll(db.getAllFotos(s));
+            adapter.notifyDataSetChanged();
         }
         else {
-            fotoList.removeIf(e -> e.getId() != null);
-
-            // TODO USAR dados do sqlite
-            fotoList.addAll(mockList());
+            this.updateList();
         }
-        adapter.notifyDataSetChanged();
     }
 
-    private List<Foto> mockList() {
-        List<Foto> fotoList = new ArrayList<>();
-        fotoList.add(new Foto(1,"Titulo-10","Foto tirada no aviver da 10","LISTA_20200507_195300.jpg" ));
-        fotoList.add(new Foto(2,"Titulo-11", "Foto tirada no aviver da 11","LISTA_20200507_195300.jpg"));
-        fotoList.add(new Foto(3,"Titulo-11", "Foto tirada no aviver da 11","LIST_20200507_195300.jpg"));
-        return  fotoList;
+    private void updateList(){
+        fotoList.removeIf(e -> e.getId() != null);
+        fotoList.addAll(db.getAllFotos());
+        adapter.notifyDataSetChanged();
     }
 
     private void verificarPerm() {
@@ -207,24 +195,27 @@ public class ScrollingActivity extends AppCompatActivity {
 
             switch (type){
                 case  ACTION_SAVE:
-                    // TODO SALVAR NO SQLite
+
                     if(foto.getId() == null){
-                        foto.setId(atomicInteger.getAndAdd(1));
-                        fotoList.add(foto);
+                        // ADD
+                        db.addFoto(foto);
+                        this.updateList();
                     }
                     else {
+                        db.updateFoto(foto);
                         Optional<Foto> f = fotoList.stream().filter(e -> e.getId().equals(foto.getId())).findFirst();
                         f.ifPresent(e -> {
                             e.setTitulo(foto.getTitulo());
                             e.setDesc(foto.getDesc());
                         });
+                        adapter.notifyDataSetChanged();
                     }
 
-                    adapter.notifyDataSetChanged();
                     Toast.makeText(this,"Operação realizada con sucesso",Toast.LENGTH_LONG).show();
+
                     break;
                 case ACTION_DELETE:
-                    // TODO Remover no sqlite
+
                     File file = new File(this.getFilesDir(), foto.getPath());
                     try {
                         if (file.exists()) {
@@ -234,8 +225,11 @@ public class ScrollingActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         Toast.makeText(this, "Falha ao remover arquivo", Toast.LENGTH_LONG).show();
                     }
+
+                    db.deleteFoto(foto);
                     fotoList.removeIf(e -> e.getId().equals(foto.getId()));
                     adapter.notifyDataSetChanged();
+
                     Toast.makeText(this,"Operação realizada con sucesso",Toast.LENGTH_LONG).show();
                     break;
                 default:

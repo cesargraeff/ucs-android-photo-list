@@ -9,13 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
 import java.util.List;
@@ -23,7 +21,6 @@ import java.util.List;
 import br.ucs.lista.R;
 import br.ucs.lista.activity.EditActivity;
 import br.ucs.lista.model.Foto;
-import lombok.Setter;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 

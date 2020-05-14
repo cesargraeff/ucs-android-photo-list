@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -20,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 
 import br.ucs.lista.R;
+import br.ucs.lista.banco.DBSQLiteHelper;
 import br.ucs.lista.model.Foto;
 
 public class EditActivity extends AppCompatActivity {
@@ -30,14 +30,18 @@ public class EditActivity extends AppCompatActivity {
     private Button btnSalvar;
     private Button btnExcluir;
     private Foto foto;
+
     private final int ACTION_DELETE = 100;
     private final int ACTION_SAVE = 200;
 
+    private DBSQLiteHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+
+        db = new DBSQLiteHelper(this);
 
         img = findViewById(R.id.img);
         txtTitulo = findViewById(R.id.txtTitulo);
@@ -50,8 +54,6 @@ public class EditActivity extends AppCompatActivity {
         Intent intent = getIntent();
         foto = (Foto) intent.getExtras().get("foto");
         setData(foto);
-
-
     }
 
     private void addListeners() {
@@ -66,7 +68,6 @@ public class EditActivity extends AppCompatActivity {
                 intent.putExtra("foto", foto);
                 intent.putExtra("type", ACTION_DELETE);
                 setResult(RESULT_OK, intent);
-
                 finish();
             }
         });
@@ -87,7 +88,6 @@ public class EditActivity extends AppCompatActivity {
                     intent.putExtra("foto", foto);
                     intent.putExtra("type", ACTION_SAVE);
                     setResult(RESULT_OK, intent);
-
                     finish();
                 }
             }
